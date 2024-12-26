@@ -1,331 +1,265 @@
-import React from 'react';
-import eventsImg from '../assets/events.png';
+import React, { useEffect, useState } from 'react';
 import Header from '../components/Header';
-import { Link } from 'react-router-dom';
-import { Button } from 'react-bootstrap';
+import { Link, useNavigate, useParams } from 'react-router-dom';
+import { createBookingAPI, getEventByIdAPI } from '../services/allApi';
+import SERVER_BASE_URL from '../services/serverUrl'; // Import SERVER_BASE_URL
 
 const EventView = () => {
+  const { id } = useParams();
+  const [eventDetails, setEventDetails] = useState(null);
+  const navigate = useNavigate()
+  useEffect(() => {
+    const fetchEventDetails = async () => {
+      try {
+        const result = await getEventByIdAPI(id);
+        if (result.status === 200) {
+          console.log("Event Details:", result.data); // Log to see the data structure
+          setEventDetails(result.data);
+        }
+      } catch (err) {
+        console.log(err);
+      }
+    };
+    fetchEventDetails();
+  }, [id]);
+
+
+
+  const handleAddToBooking = async () => {
+    const user = JSON.parse(sessionStorage.getItem("user"));
+    if (!user) {
+      alert("Please login to add booking");
+      navigate('/login');
+      return;
+    }
+    const userId = user._id; // Extract user ID
+  
+    if (eventDetails) {
+      const bookingDetails = {
+        userId,
+        eventId: eventDetails._id,
+        eventName: eventDetails.eventName,
+        eventImage: eventDetails.eventImage,
+        status: eventDetails.status,
+        description: eventDetails.description,
+        date: eventDetails.date,
+        price: eventDetails.price,
+        location: eventDetails.location,
+      };
+  
+      try {
+        // Check if the user has already booked the event
+        const existingBooking = await createBookingAPI({ userId, eventId: eventDetails._id });
+  
+        if (existingBooking.status === 200 && existingBooking.data.length > 0) {
+          alert("You have already booked this event.");
+          return;
+        }
+  
+        // If no existing booking, proceed to create a new booking
+        const result = await createBookingAPI(bookingDetails); // Using the commonAPI function
+        if (result.status === 200) {
+          alert("Booking added successfully");
+          console.log("Booking Response:", result.data);
+          navigate('/bookings'); // Navigate to bookings page after success
+        } else {
+          alert("Failed to add booking");
+        }
+      } catch (err) {
+        alert("Failed to add booking");
+        console.error(err);
+      }
+    }
+  };
+  
+  
+
+
+if (!eventDetails) {
+  return <div>Loading...</div>;
+}
+
+  // Check if seatsAvailable property exists
+  const seatsAvailableMessage = eventDetails.seatsAvailable !== undefined
+    ? (eventDetails.seatsAvailable <= 5
+      ? `Hurry! Only ${eventDetails.seatsAvailable} seats left.`
+      : `${eventDetails.seatsAvailable} seats available`)
+    : "Seats information not available";
+
   return (
     <>
       <Header />
       <div style={{ paddingTop: '100px', position: 'relative', overflow: 'hidden' }} className="container mt-5">
-      <h1 style={{
+        <h1 style={{
           fontFamily: '"Hubot Sans", serif',
           fontWeight: '500',
           fontSize: '3.5rem',
           opacity: 0.9,
           marginBottom: '10px',
         }} className='fw-bolder'>E<span className='text-primary'>vents</span></h1>    
-            <img src={eventsImg} alt="Event" style={{ width: '100%', height: 'auto', borderRadius: '8px' }} />
-        <div style={{ position: 'absolute', bottom: '20px', left: '20px', color: '#fff' }}>
-          <h3 style={{
-            fontFamily: '"Hubot Sans", serif',
-            fontWeight: '700',
-            fontSize: '2rem',
-            marginBottom: '5px',
-            textShadow: '2px 2px 4px rgba(0, 0, 0, 0.5)'
-          }} className='fw-bolder'>Taylor Swift</h3>
-          <p className='fw-bolder'>Concert</p>
+        <div style={{ position: 'relative', borderRadius: '8px', overflow: 'hidden' }}>
+          <img   src={`${SERVER_BASE_URL}/uploads/${eventDetails?.eventImage}`} alt="Event" style={{ width: '100%', height: '600px' }} className='img-fluid' />
+          <div style={{ position: 'absolute', bottom: '20px', left: '20px', color: '#fff' }}>
+            <h3 style={{
+              fontFamily: '"Hubot Sans", serif',
+              fontWeight: '700',
+              fontSize: '2rem',
+              marginBottom: '5px',
+              textShadow: '2px 2px 4px rgba(0, 0, 0, 0.5)'
+            }} className='fw-bolder'>{eventDetails?.eventName}</h3>
+            <p style={{
+              fontFamily: '"Hubot Sans", serif',
+              fontWeight: '700',
+              fontSize: '2rem',
+              marginBottom: '5px',
+              textShadow: '2px 2px 4px rgba(0, 0, 0, 0.5)'
+            }} className='fw-bolder'>{eventDetails?.category}</p>
+          </div>
+          <div className='shadow' style={{ position: 'absolute', bottom: '20px', right: '20px', color: '#fff', textAlign: 'right', maxWidth: '40%', padding: '10px', backgroundColor: 'rgba(0, 0, 0, 0.5)', borderRadius: '8px' }}>
+          
+          </div>
         </div>
       </div>
-      <div  className="row  container mt-5" 
-  style={{ marginLeft: 'auto', marginRight: 'auto', padding: '0 15px' }}>
-    <h2 style={{
+      <div className="container mt-5">
+      <h2
+        style={{
           fontFamily: '"Hubot Sans", serif',
           fontWeight: '500',
           fontSize: '2.5rem',
           opacity: 0.9,
-          marginBottom: '10px',
-        }} className='fw-bolder text-center mb-5'><span className='text-primary fw-bolder'>Tickets</span> Available</h2>
-  <div className="col-lg-6 shadow d-flex justify-content-center align-items-center">
-    <div className="d-flex align-items-center gap-4 flex-wrap">
-    <div 
-  className="d-flex align-items-center gap-4 flex-wrap"
-  style={{
-    display: 'flex',
-    justifyContent: 'space-between',
-    flexWrap: 'wrap', // Wrap content on smaller screens
-  }}
->
-<div 
-  className="d-flex align-items-stretch gap-0 flex-wrap"
-  style={{
-    justifyContent: 'space-between',
-    flexWrap: 'wrap', // Ensures wrapping on smaller screens
-  }}
->
-  {/* Date Box */}
-  <div 
-    style={{ 
-      width: '100px', 
-      minWidth: '100px', 
-      backgroundColor: 'rgba(0, 123, 255, 1)', 
-      height: '250px', // Ensure consistent height
-    }} 
-    className="text-center p-3 rounded shadow-sm d-flex flex-column justify-content-center align-items-center"
-  >
-    <p className="text-light fw-bolder mb-1" style={{ fontSize: '1.5rem' }}>25</p>
-    <p className="text-light fw-bolder mb-1" style={{ fontSize: '1.2rem' }}>July</p>
-    <p className="text-light fw-bolder" style={{ fontSize: '1rem' }}>2025</p>
-  </div>
-  
-  {/* Event Details */}
-  <div 
-    style={{ 
-      flex: '1', 
-      minWidth: '450px', 
-      maxWidth: '600px', 
-      backgroundColor: 'rgba(150, 184, 250, 1)', 
-      height: '250px', // Same height as Date Box
-    }} 
-    className="p-3 text-light text-shadow fw-bolder rounded shadow-sm d-flex flex-column justify-content-center"
-  >
-    <h5 className="fw-bolder mb-3">Taylor Swift</h5>
-    <p className="mb-2">
-      <i className="fa-solid fa-ticket me-2"></i> 
-      <strong>Status:</strong> Available
-    </p>
-    <p className="mb-2">
-      <i className="fa-solid fa-sack-dollar me-2"></i> 
-      <strong>Price:</strong> $200
-    </p>
-    <p className="mb-2">
-      <i className="fa-solid fa-calendar-days me-2"></i> 
-      <strong>Date & Time:</strong> Fri 11:00 AM
-    </p>
-    <p className="mb-0">
-      <i className="fa-solid fa-location-dot me-2"></i> 
-      <strong>Location:</strong> New York
-    </p>
-    <Link to={'/bookings'}>
-      <button className="mt-3 btn btn-primary">Add To Bookings</button>
-    </Link>
-  </div>
-</div>
+          marginBottom: '30px',
+          textAlign: 'center',
+          color: '#333',
+        }}
+        className="fw-bolder mb-5"
+      >
+        <span className="text-primary fw-bolder">Event</span> Details
+      </h2>
 
-</div>
+      <div
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '30px',
+        }}
+      >
+        <div
+          className="event-detail-card shadow-lg"
+          style={{
+            padding: '30px',
+            borderRadius: '20px',
+            backgroundColor: '#f0f4f8',
+            transition: 'transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease',
+            position: 'relative',
+            overflow: 'hidden',
+            boxShadow: '0 6px 12px rgba(0, 0, 0, 0.1)',
+          }}
+        >
+          {/* Hover Effect: Gradient Background and Shadow on Hover */}
+          <div
+            style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              width: '100%',
+              height: '100%',
+              background: 'linear-gradient(to top left, rgba(0, 123, 255, 0.2), rgba(0, 0, 0, 0.2))',
+              opacity: 0,
+              transition: 'opacity 0.4s ease',
+            }}
+            className="event-detail-hover"
+          ></div>
 
+          <div
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '20px',
+            }}
+          >
+            {/* Event Name & Category */}
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+              }}
+            >
+              <h3
+                style={{
+                  fontFamily: '"Hubot Sans", serif',
+                  fontWeight: '700',
+                  fontSize: '2.2rem',
+                  color: '#333',
+                }}
+              >
+                {eventDetails.eventName}
+              </h3>
+              <p
+                style={{
+                  fontFamily: '"Hubot Sans", serif',
+                  fontWeight: '500',
+                  fontSize: '1.2rem',
+                  color: '#007bff',
+                  textTransform: 'uppercase',
+                }}
+              >
+                {eventDetails.category}
+              </p>
+            </div>
+
+            {/* Event Information */}
+            <div className="row">
+              <div className="col-md-6">
+                <p><strong>Location:</strong> {eventDetails.location}</p>
+                <p><strong>Date:</strong> {eventDetails.date}</p>
+                <p><strong>Event Type:</strong> {eventDetails.eventType}</p>
+              </div>
+              <div className="col-md-6">
+                <p><strong>Status:</strong> {eventDetails.status}</p>
+                <p><strong>Price:</strong> ${eventDetails.price}</p>
+                <p><strong>Seats Available:</strong> {seatsAvailableMessage}</p>
+              </div>
+            </div>
+
+            {/* Description */}
+            <div
+              className="description"
+              style={{
+                padding: '20px',
+                backgroundColor: '#e0e0e0',
+                borderRadius: '10px',
+                marginTop: '20px',
+                fontStyle: 'italic',
+                fontSize: '1.1rem',
+                color: '#333',
+              }}
+            >
+              <p>{eventDetails.description}</p>
+            </div>
+
+            {/* Add to Booking Button */}
+          
+          </div>
+        </div>
+      </div>
+      <div className="text-center" style={{ marginTop: '30px' }}>
+    <button
+      onClick={handleAddToBooking}
+      className="btn btn-primary"
+      style={{
+        fontSize: '1.1rem',
+        padding: '12px 30px',
+        borderRadius: '30px',
+        border: 'none',
+        transition: 'background-color 0.3s ease, transform 0.2s ease',
+        boxShadow: '0 4px 10px rgba(0, 123, 255, 0.2)',
+      }}
+    >
+      Add to Booking
+    </button>
+  </div>
     </div>
-  </div>
-
-  {/* Optional Empty Column for Layout Adjustments */}
-  <div className="col-lg-6 shadow d-flex justify-content-center align-items-center">
-    <div className="d-flex align-items-center gap-4 flex-wrap">
-    <div 
-  className="d-flex align-items-center gap-4 flex-wrap"
-  style={{
-    display: 'flex',
-    justifyContent: 'space-between',
-    flexWrap: 'wrap', // Wrap content on smaller screens
-  }}
->
-<div 
-  className="d-flex align-items-stretch gap-0 flex-wrap"
-  style={{
-    justifyContent: 'space-between',
-    flexWrap: 'wrap', // Ensures wrapping on smaller screens
-  }}
->
-  {/* Date Box */}
-  <div 
-    style={{ 
-      width: '100px', 
-      minWidth: '100px', 
-      backgroundColor: 'rgba(0, 123, 255, 1)', 
-      height: '250px', // Ensure consistent height
-    }} 
-    className="text-center p-3 rounded shadow-sm d-flex flex-column justify-content-center align-items-center"
-  >
-    <p className="text-light fw-bolder mb-1" style={{ fontSize: '1.5rem' }}>25</p>
-    <p className="text-light fw-bolder mb-1" style={{ fontSize: '1.2rem' }}>July</p>
-    <p className="text-light fw-bolder" style={{ fontSize: '1rem' }}>2025</p>
-  </div>
-  
-  {/* Event Details */}
-  <div 
-    style={{ 
-      flex: '1', 
-      minWidth: '450px', 
-      maxWidth: '600px', 
-      backgroundColor: 'rgba(150, 184, 250, 1)', 
-      height: '250px', // Same height as Date Box
-    }} 
-    className="p-3 text-light text-shadow fw-bolder rounded shadow-sm d-flex flex-column justify-content-center"
-  >
-    <h5 className="fw-bolder mb-3">Taylor Swift</h5>
-    <p className="mb-2">
-      <i className="fa-solid fa-ticket me-2"></i> 
-      <strong>Status:</strong> Available
-    </p>
-    <p className="mb-2">
-      <i className="fa-solid fa-sack-dollar me-2"></i> 
-      <strong>Price:</strong> $200
-    </p>
-    <p className="mb-2">
-      <i className="fa-solid fa-calendar-days me-2"></i> 
-      <strong>Date & Time:</strong> Fri 11:00 AM
-    </p>
-    <p className="mb-0">
-      <i className="fa-solid fa-location-dot me-2"></i> 
-      <strong>Location:</strong> New York
-    </p>
-    <Link to={'/bookings'}>
-      <button className="mt-3 btn btn-primary">Add To Bookings</button>
-    </Link>
-  </div>
-</div>
-
-</div>
-
-    </div>
-  </div>
-</div>
-<div  className="row container mt-5" 
-  style={{ marginLeft: 'auto', marginRight: 'auto', padding: '0 15px' }}
->
-  <div className="col-lg-6 shadow d-flex justify-content-center align-items-center">
-    <div className="d-flex align-items-center gap-4 flex-wrap">
-    <div 
-  className="d-flex align-items-center gap-4 flex-wrap"
-  style={{
-    display: 'flex',
-    justifyContent: 'space-between',
-    flexWrap: 'wrap', // Wrap content on smaller screens
-  }}
->
-<div 
-  className="d-flex align-items-stretch gap-0 flex-wrap"
-  style={{
-    justifyContent: 'space-between',
-    flexWrap: 'wrap', // Ensures wrapping on smaller screens
-  }}
->
-  {/* Date Box */}
-  <div 
-    style={{ 
-      width: '100px', 
-      minWidth: '100px', 
-      backgroundColor: 'rgba(0, 123, 255, 1)', 
-      height: '250px', // Ensure consistent height
-    }} 
-    className="text-center p-3 rounded shadow-sm d-flex flex-column justify-content-center align-items-center"
-  >
-    <p className="text-light fw-bolder mb-1" style={{ fontSize: '1.5rem' }}>25</p>
-    <p className="text-light fw-bolder mb-1" style={{ fontSize: '1.2rem' }}>July</p>
-    <p className="text-light fw-bolder" style={{ fontSize: '1rem' }}>2025</p>
-  </div>
-  
-  {/* Event Details */}
-  <div 
-    style={{ 
-      flex: '1', 
-      minWidth: '450px', 
-      maxWidth: '600px', 
-      backgroundColor: 'rgba(150, 184, 250, 1)', 
-      height: '250px', // Same height as Date Box
-    }} 
-    className="p-3 text-light text-shadow fw-bolder rounded shadow-sm d-flex flex-column justify-content-center"
-  >
-    <h5 className="fw-bolder mb-3">Taylor Swift</h5>
-    <p className="mb-2">
-      <i className="fa-solid fa-ticket me-2"></i> 
-      <strong>Status:</strong> Available
-    </p>
-    <p className="mb-2">
-      <i className="fa-solid fa-sack-dollar me-2"></i> 
-      <strong>Price:</strong> $200
-    </p>
-    <p className="mb-2">
-      <i className="fa-solid fa-calendar-days me-2"></i> 
-      <strong>Date & Time:</strong> Fri 11:00 AM
-    </p>
-    <p className="mb-0">
-      <i className="fa-solid fa-location-dot me-2"></i> 
-      <strong>Location:</strong> New York
-    </p>
-    <Link to={'/bookings'}>
-      <button className="mt-3 btn btn-primary">Add To Bookings</button>
-    </Link>
-  </div>
-</div>
-
-</div>
-
-    </div>
-  </div>
-
-  {/* Optional Empty Column for Layout Adjustments */}
-  <div className="col-lg-6 shadow d-flex justify-content-center align-items-center">
-    <div className="d-flex align-items-center gap-4 flex-wrap">
-    <div 
-  className="d-flex align-items-center gap-4 flex-wrap"
-  style={{
-    display: 'flex',
-    justifyContent: 'space-between',
-    flexWrap: 'wrap', // Wrap content on smaller screens
-  }}
->
-<div 
-  className="d-flex align-items-stretch gap-0 flex-wrap"
-  style={{
-    justifyContent: 'space-between',
-    flexWrap: 'wrap', // Ensures wrapping on smaller screens
-  }}
->
-  {/* Date Box */}
-  <div 
-    style={{ 
-      width: '100px', 
-      minWidth: '100px', 
-      backgroundColor: 'rgba(0, 123, 255, 1)', 
-      height: '250px', // Ensure consistent height
-    }} 
-    className="text-center p-3 rounded shadow-sm d-flex flex-column justify-content-center align-items-center"
-  >
-    <p className="text-light fw-bolder mb-1" style={{ fontSize: '1.5rem' }}>25</p>
-    <p className="text-light fw-bolder mb-1" style={{ fontSize: '1.2rem' }}>July</p>
-    <p className="text-light fw-bolder" style={{ fontSize: '1rem' }}>2025</p>
-  </div>
-  
-  {/* Event Details */}
-  <div 
-    style={{ 
-      flex: '1', 
-      minWidth: '450px', 
-      maxWidth: '600px', 
-      backgroundColor: 'rgba(150, 184, 250, 1)', 
-      height: '250px', // Same height as Date Box
-    }} 
-    className="p-3 text-light text-shadow fw-bolder rounded shadow-sm d-flex flex-column justify-content-center"
-  >
-    <h5 className="fw-bolder mb-3">Taylor Swift</h5>
-    <p className="mb-2">
-      <i className="fa-solid fa-ticket me-2"></i> 
-      <strong>Status:</strong> Available
-    </p>
-    <p className="mb-2">
-      <i className="fa-solid fa-sack-dollar me-2"></i> 
-      <strong>Price:</strong> $200
-    </p>
-    <p className="mb-2">
-      <i className="fa-solid fa-calendar-days me-2"></i> 
-      <strong>Date & Time:</strong> Fri 11:00 AM
-    </p>
-    <p className="mb-0">
-      <i className="fa-solid fa-location-dot me-2"></i> 
-      <strong>Location:</strong> New York
-    </p>
-    <Link to={'/bookings'}>
-      <button className="mt-3 btn btn-primary">Add To Bookings</button>
-    </Link>
-  </div>
-</div>
-
-</div>
-
-    </div>
-  </div>
-</div>
     </>
   );
 };

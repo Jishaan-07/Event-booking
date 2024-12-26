@@ -1,11 +1,75 @@
-import React from 'react';
+import React, { useState } from 'react';
 import logo from '../assets/Logo.png';
 import loginImg from '../assets/loginImg.png';
-
 import { FloatingLabel, Form, Button } from 'react-bootstrap';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { loginAPI, registerAPI } from '../services/allApi';
+import { CircularProgress } from '@mui/material';
 
 const Auth = ({ insideRegister }) => {
+  const [isLogin,setIsLogin] = useState(false)
+
+  const [userInput, setUserInput] = useState({
+    username: "", phoneno: "", email: "", password: ""
+  })
+  const navigate = useNavigate()
+  console.log(userInput);
+
+  const register = async (e) => {
+    e.preventDefault()
+    if (userInput.username && userInput.phoneno && userInput.email && userInput.password) {
+      // api call
+      try{
+        const result = await registerAPI(userInput)
+        if(result.status==200){
+          alert(`Welcome ${result.data?.username} , Please Login to book Events!!!`)
+          navigate("/login")
+          setUserInput({username: "", phoneno: "", email: "", password: ""})
+        }else{
+          if(result.response.status==406){
+            alert(result.response.data)
+            setUserInput({username: "", phoneno: "", email: "", password: ""})
+
+          }
+        }
+      }catch(err){
+        console.log(err);
+        
+      }
+    } else {
+      alert("Please fill the form completly!!!")
+    }
+  }
+  const login = async (e) => {
+    e.preventDefault()
+    if ( userInput.email && userInput.password) {
+      // api call
+      try{
+        const result = await loginAPI(userInput)
+        if(result.status==200){
+          sessionStorage.setItem("user",JSON.stringify(result.data.user))
+          sessionStorage.setItem("token",result.data.token)
+          setIsLogin(true)
+          setTimeout(()=>{
+            navigate("/")
+            setUserInput({email: "", password: ""})
+            setIsLogin(false)
+
+          },2000)
+        }else{
+          if(result.response.status==404){
+            alert(result.response.data)
+          }
+        }
+      }catch(err){
+        console.log(err);
+        
+      }
+    } else {
+      alert("Please fill the form completly!!!")
+    }
+  }
+
   return (
     <>
       <div
@@ -26,27 +90,45 @@ const Auth = ({ insideRegister }) => {
               </h4>
               <Form>
                 {insideRegister && (
-                  <FloatingLabel controlId="floatingInputUsername" label="Username" className="mb-3">
-                    <Form.Control type="text" placeholder="Username" />
-                  </FloatingLabel>
+                  <div>
+                    <FloatingLabel controlId="floatingInputUsername" label="Username" className="mb-3">
+                      <Form.Control value={userInput.username} onChange={e => setUserInput({ ...userInput, username: e.target.value })} type="text" placeholder="Username" />
+                    </FloatingLabel>
+                    <FloatingLabel controlId="floatingInputUsername" label="PhoneNumber" className="mb-3">
+                      <Form.Control value={userInput.phoneno} onChange={e => setUserInput({ ...userInput, phoneno: e.target.value })} type="text" placeholder="PhoneNumber" />
+                    </FloatingLabel>
+                  </div>
+
                 )}
                 <FloatingLabel controlId="floatingInput" label="Email address" className="mb-3">
-                  <Form.Control type="email" placeholder="Email" />
+                  <Form.Control value={userInput.email} onChange={e => setUserInput({ ...userInput, email: e.target.value })} type="email" placeholder="Email" />
                 </FloatingLabel>
                 <FloatingLabel controlId="floatingPassword" label="Password">
-                  <Form.Control type="password" placeholder="Password" />
+                  <Form.Control value={userInput.password} onChange={e => setUserInput({ ...userInput, password: e.target.value })} type="password" placeholder="Password" />
                 </FloatingLabel>
-                <div className="mt-3 d-flex justify-content-center">
-                  <Button variant="primary" className="shadow px-5 py-2 mb-2 rounded-pill">
-                    {insideRegister ? 'Sign Up' : 'Sign In'}
-                  </Button>
-                </div>
-                <p className="text-center text-light mt-2">
-                  {insideRegister ? 'Existing User?' : 'New User?'} Please{' '}
-                  <Link to={insideRegister ? '/login' : '/register'} className="text-light fw-bold">
-                    {insideRegister ? 'Login' : 'Register'}
-                  </Link>
-                </p>
+                {
+                  insideRegister ?
+                    <div className="mt-3  ">
+                      <div className='d-flex justify-content-center'>
+                        <Button onClick={register} variant="primary" className="shadow px-5 py-2 mb-2 rounded-pill">Sign Up</Button>
+                      </div>
+                      <p className="text-center text-light mt-2">Existing User? Please Click here to <Link to={'/login'}>Login</Link> </p>
+                    </div>
+                    :
+                    <div className="mt-3  ">
+                      <div className='d-flex justify-content-center'>
+                        <Button onClick={login} variant="primary" className="shadow px-5 d-flex align-items-center py-2 mb-2 rounded-pill">
+                          Sign In 
+                          { isLogin &&
+                            <CircularProgress className='mx-2' color="success" />
+                            }
+                          </Button>
+                      </div>
+                      <p className="text-center text-light mt-2">New User? Please Click here to <Link to={'/register'}>Register</Link> </p>
+                    </div>
+
+                }
+
               </Form>
             </div>
             <div className="col-lg-6 d-flex justify-content-center align-items-center">

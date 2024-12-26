@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Carousel } from 'react-bootstrap';
 import car1 from '../assets/carousel1.jpg';
 import car2 from '../assets/carousel2.jpg';
@@ -8,8 +8,39 @@ import Header from '../components/Header';
 import landingImg from '../assets/landingImg.png';
 import { Link } from 'react-router-dom';
 import EventCard from '../components/EventCard';
+import { homeEventAPI } from '../services/allApi';
 
 const Home = () => {
+ const [username,setUsername] =useState("")
+  const [isLogin, setIsLogin] = useState(false)
+   const[homeEvents,setHomeEvents]=useState([])
+
+console.log(homeEvents);
+
+
+  useEffect(() => {
+    getHomeEvents()
+    if (sessionStorage.getItem("token")) {
+      setUsername(JSON.parse(sessionStorage.getItem("user")).username.split(" ")[0])
+      setIsLogin(true)
+    } else {
+      setIsLogin(false)
+    }
+  }, [])
+
+
+  const getHomeEvents = async () => {
+    try{
+      const result = await homeEventAPI()
+      console.log(result)
+      if(result.status==200){
+        setHomeEvents(result.data)
+      }
+    }catch(err){
+      console.log(err)
+    }
+  }
+
   return (
     <>
       <Header />
@@ -36,7 +67,7 @@ const Home = () => {
           }}
           className="text-center text-primary p-3"
         >
-          <h1 className="fw-bolder text-dark">Welcome to EVNIFY!</h1>
+          <h1 className="fw-bolder text-dark">Welcome to EVNIFY!, <span className='text-primary'>{username}</span></h1>
           <h1 style={{ fontSize: '40px' }} className="fw-bold">
             <span style={{ fontSize: '50px' }} className="text-dark fw-bolder">E</span>xperience,
             <span style={{ fontSize: '50px' }} className="text-dark fw-bolder">V</span>ibrancy,
@@ -47,16 +78,23 @@ const Home = () => {
         </div>
 
         <div className="d-flex justify-content-center align-items-center mt-3" style={{ padding: '10px 0' }}>
-          <Link to={'/login'} className="btn btn-primary px-4 py-3 mt-5">
+          {
+            isLogin ? 
+            <Link to={'/all-events'} className="btn btn-primary px-4 py-3 mt-5">
+            Book Your Events
+            </Link>
+            :
+            <Link to={'/login'} className="btn btn-primary px-4 py-3 mt-5">
             Login to Book Your Spot
           </Link>
+            }
         </div>
 
       </div>
 
       <div className="d-flex justify-content-between px-3 px-md-5 align-items-center">
         <h3 className="ms-3 ps-md-5 display-6 fw-bolder text-dark display-md-4">
-          <span className='text-primary'>U</span>pcoming <span className='text-primary'>E</span>vents
+          <span className='text-primary'>O</span>ur <span className='text-primary'>E</span>vents
         </h3>
         <Link to={'/all-events'}>
           <button className="btn btn-link pe-3 pe-md-5 text-decoration-none">
@@ -67,34 +105,17 @@ const Home = () => {
       </div>
       <div className="container d-flex justify-content-between align-items-center mt-5 gap-4 flex-wrap">
 
-      <Link
-        to={`/event-view/:id`}
-        style={{ textDecoration: 'none' }} 
-      >
-          <EventCard />
+       {
+        homeEvents.map(event=>(
+          <Link key={event._id} to={`/event-view/${event._id}`} style={{ textDecoration: 'none' }}  >
+          <EventCard displayData={event} />
         </Link>
-
+        ))
+   
+}
       </div>
 
-      <div className="d-flex justify-content-between px-3 px-md-5 mt-5 align-items-center">
-        <h3 className="ms-3 ps-md-5 display-6 fw-bolder text-dark display-md-4">
-          <span className='text-primary'>P</span>opular <span className='text-primary'>V</span>enues
-        </h3>
-        <button className="btn btn-link pe-3 pe-md-5 text-decoration-none">
-          View More..
-          <i className="fa-solid fa-angles-right"></i>
-        </button>
-      </div>
-      <div className="container d-flex justify-content-between align-items-center mt-5 gap-4 flex-wrap">
-      <Link
-        to={`/event-view/:id`}
-        style={{ textDecoration: 'none' }} 
-      >
-          <EventCard />
-        </Link>
-
-
-      </div>
+    
 
       <div className="mt-5 mb-5">
         <h3 className="container text-center display-6 fw-bolder text-dark mb-4">

@@ -43,7 +43,7 @@ const BookingsList = () => {
                 <th>Date</th>
                 <th>Event</th>
                 <th>Price</th>
-                <th>Action</th>
+                
               </tr>
             </thead>
             <tbody>
@@ -54,10 +54,7 @@ const BookingsList = () => {
                 <td>29/08/2003</td>
                 <td>Justin Bieber</td>
                 <td>$500</td>
-                <td>
-                  <button className="btn btn-danger btn-sm me-2">Cancel</button>
-                  <button className="btn btn-success btn-sm">Confirm</button>
-                </td>
+               
               </tr>
               <tr>
                 <td>2</td>
@@ -66,10 +63,7 @@ const BookingsList = () => {
                 <td>15/09/2023</td>
                 <td>Coldplay Concert</td>
                 <td>$300</td>
-                <td>
-                  <button className="btn btn-danger btn-sm me-2">Cancel</button>
-                  <button className="btn btn-success btn-sm">Confirm</button>
-                </td>
+                
               </tr>
             </tbody>
           </Table>

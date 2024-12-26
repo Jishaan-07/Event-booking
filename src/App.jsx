@@ -13,6 +13,7 @@ import AddEvent from './admin/AddEvent';
 import BookingsList from './admin/BookingsList';
 import EventsLists from './admin/EventsLists';
 import Header from './components/Header';
+import MyProfile from './pages/MyProfile';
 
 
 
@@ -32,6 +33,7 @@ function App() {
   <Route path='/add-event' element={<AddEvent/>} />
   <Route path='/booking-list' element={<BookingsList/>} />
   <Route path='/events-list' element={<EventsLists/>} />
+  <Route path='/my-profile' element={<MyProfile/>} />
 
   </Routes>
   <Footer/>

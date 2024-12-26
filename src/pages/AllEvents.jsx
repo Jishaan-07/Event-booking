@@ -1,13 +1,32 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Header from '../components/Header';
 import EventCard from '../components/EventCard';
 import { Link } from 'react-router-dom';
+import { allEventAPI } from '../services/allApi';
 
 const AllEvents = () => {
+  const [allEvents, setAllEvents] = useState([]);
+
+  useEffect(() => {
+    getAllEvents();
+  }, []);
+
+  const getAllEvents = async () => {
+    try {
+      const result = await allEventAPI();
+      console.log(result);
+      if (result.status === 200) {
+        setAllEvents(result.data);
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   return (
     <>
       <Header />
-      <div className="text-center fw-bolder  mt-5">
+      <div className="text-center fw-bolder mt-5">
         <h1 style={{
           fontFamily: '"Hubot Sans", serif',
           fontWeight: '500',
@@ -16,13 +35,18 @@ const AllEvents = () => {
           marginBottom: '10px',
         }} className='fw-bolder pt-5'><span className='text-primary fw-bolder'>All</span> Events</h1>
       </div>
-      <div style={{paddingTop:'70px'}} className="d-flex justify-content-center align-items-center mt-5">
-      <Link
-        to={`/event-view/:id`}
-        style={{ textDecoration: 'none' }} 
-      >
-          <EventCard />
-        </Link>
+      <div className="d-flex justify-content-center align-items-center flex-wrap" style={{ paddingTop: '70px' }}>
+        {
+          allEvents.map(event => (
+            <Link
+              key={event._id} // Assuming each event has a unique _id
+              to={`/event-view/${event._id}`} // Ensure the correct event ID is passed in the URL
+              style={{ textDecoration: 'none' }}
+            >
+              <EventCard displayData={event} /> {/* Pass the event data to EventCard */}
+            </Link>
+          ))
+        }
       </div>
     </>
   );
