@@ -80,3 +80,15 @@ button:hover {
   color: #007bff;
   text-transform: uppercase;
 }
+.event-card {
+  position: relative;
+  padding: 16px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background-color: #fff;
+}
+
+.event-card button {
+  margin-top: 8px;
+  width: 100%;
+}

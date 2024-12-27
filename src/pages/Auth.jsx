@@ -7,68 +7,69 @@ import { loginAPI, registerAPI } from '../services/allApi';
 import { CircularProgress } from '@mui/material';
 
 const Auth = ({ insideRegister }) => {
-  const [isLogin,setIsLogin] = useState(false)
-
+  const [isLogin, setIsLogin] = useState(false);
   const [userInput, setUserInput] = useState({
     username: "", phoneno: "", email: "", password: ""
-  })
-  const navigate = useNavigate()
+  });
+  const navigate = useNavigate();
   console.log(userInput);
 
   const register = async (e) => {
-    e.preventDefault()
+    e.preventDefault();
     if (userInput.username && userInput.phoneno && userInput.email && userInput.password) {
       // api call
-      try{
-        const result = await registerAPI(userInput)
-        if(result.status==200){
-          alert(`Welcome ${result.data?.username} , Please Login to book Events!!!`)
-          navigate("/login")
-          setUserInput({username: "", phoneno: "", email: "", password: ""})
-        }else{
-          if(result.response.status==406){
-            alert(result.response.data)
-            setUserInput({username: "", phoneno: "", email: "", password: ""})
-
+      try {
+        const result = await registerAPI(userInput);
+        if (result.status === 200) {
+          alert(`Welcome ${result.data?.username}, Please Login to book Events!!!`);
+          navigate("/login");
+          setUserInput({ username: "", phoneno: "", email: "", password: "" });
+        } else {
+          if (result.response.status === 406) {
+            alert(result.response.data);
+            setUserInput({ username: "", phoneno: "", email: "", password: "" });
           }
         }
-      }catch(err){
+      } catch (err) {
         console.log(err);
-        
       }
     } else {
-      alert("Please fill the form completly!!!")
+      alert("Please fill the form completely!!!");
     }
-  }
+  };
+
   const login = async (e) => {
-    e.preventDefault()
-    if ( userInput.email && userInput.password) {
+    e.preventDefault();
+    if (userInput.email && userInput.password) {
       // api call
-      try{
-        const result = await loginAPI(userInput)
-        if(result.status==200){
-          sessionStorage.setItem("user",JSON.stringify(result.data.user))
-          sessionStorage.setItem("token",result.data.token)
-          setIsLogin(true)
-          setTimeout(()=>{
-            navigate("/")
-            setUserInput({email: "", password: ""})
-            setIsLogin(false)
+      try {
+        const result = await loginAPI(userInput);
+        if (result.status === 200) {
+          sessionStorage.setItem("user", JSON.stringify(result.data.user));
+          sessionStorage.setItem("token", result.data.token);
+          setIsLogin(true);
 
-          },2000)
-        }else{
-          if(result.response.status==404){
-            alert(result.response.data)
+          setTimeout(() => {
+            if (userInput.email === "admin@gmail.com" && userInput.password === "admin123") {
+              navigate("/booking-list");
+            } else {
+              navigate("/");
+            }
+            setUserInput({ email: "", password: "" });
+            setIsLogin(false);
+          }, 2000);
+        } else {
+          if (result.response.status === 404) {
+            alert(result.response.data);
           }
         }
-      }catch(err){
+      } catch (err) {
         console.log(err);
-        
       }
     } else {
-      alert("Please fill the form completly!!!")
+      alert("Please fill the form completely!!!");
     }
-  }
+  };
 
   return (
     <>
@@ -98,7 +99,6 @@ const Auth = ({ insideRegister }) => {
                       <Form.Control value={userInput.phoneno} onChange={e => setUserInput({ ...userInput, phoneno: e.target.value })} type="text" placeholder="PhoneNumber" />
                     </FloatingLabel>
                   </div>
-
                 )}
                 <FloatingLabel controlId="floatingInput" label="Email address" className="mb-3">
                   <Form.Control value={userInput.email} onChange={e => setUserInput({ ...userInput, email: e.target.value })} type="email" placeholder="Email" />
@@ -106,29 +106,24 @@ const Auth = ({ insideRegister }) => {
                 <FloatingLabel controlId="floatingPassword" label="Password">
                   <Form.Control value={userInput.password} onChange={e => setUserInput({ ...userInput, password: e.target.value })} type="password" placeholder="Password" />
                 </FloatingLabel>
-                {
-                  insideRegister ?
-                    <div className="mt-3  ">
-                      <div className='d-flex justify-content-center'>
-                        <Button onClick={register} variant="primary" className="shadow px-5 py-2 mb-2 rounded-pill">Sign Up</Button>
-                      </div>
-                      <p className="text-center text-light mt-2">Existing User? Please Click here to <Link to={'/login'}>Login</Link> </p>
+                {insideRegister ? (
+                  <div className="mt-3">
+                    <div className='d-flex justify-content-center'>
+                      <Button onClick={register} variant="primary" className="shadow px-5 py-2 mb-2 rounded-pill">Sign Up</Button>
                     </div>
-                    :
-                    <div className="mt-3  ">
-                      <div className='d-flex justify-content-center'>
-                        <Button onClick={login} variant="primary" className="shadow px-5 d-flex align-items-center py-2 mb-2 rounded-pill">
-                          Sign In 
-                          { isLogin &&
-                            <CircularProgress className='mx-2' color="success" />
-                            }
-                          </Button>
-                      </div>
-                      <p className="text-center text-light mt-2">New User? Please Click here to <Link to={'/register'}>Register</Link> </p>
+                    <p className="text-center text-light mt-2">Existing User? Please Click here to <Link to={'/login'}>Login</Link> </p>
+                  </div>
+                ) : (
+                  <div className="mt-3">
+                    <div className='d-flex justify-content-center'>
+                      <Button onClick={login} variant="primary" className="shadow px-5 d-flex align-items-center py-2 mb-2 rounded-pill">
+                        Sign In
+                        {isLogin && <CircularProgress className='mx-2' color="success" />}
+                      </Button>
                     </div>
-
-                }
-
+                    <p className="text-center text-light mt-2">New User? Please Click here to <Link to={'/register'}>Register</Link> </p>
+                  </div>
+                )}
               </Form>
             </div>
             <div className="col-lg-6 d-flex justify-content-center align-items-center">

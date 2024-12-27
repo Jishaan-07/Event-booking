@@ -1,9 +1,35 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import logo from '../assets/Logo.png';
 import SideNavbar from '../components/SideNavbar';
 import { Container, Navbar, Table } from 'react-bootstrap';
+import { getAdminBookingListAPI } from '../services/allApi';
 
 const BookingsList = () => {
+  const [bookings, setBookings] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    fetchBookings();
+  }, []);
+
+  const fetchBookings = async () => {
+    setIsLoading(true);
+    try {
+      const result = await getAdminBookingListAPI();
+      if (result.status === 200) {
+        setBookings(result.data);
+      } else {
+        setError('Failed to fetch bookings.');
+      }
+    } catch (err) {
+      setError('Error fetching bookings. Please try again later.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+console.log(bookings);
+
   return (
     <>
       {/* Top Navbar */}
@@ -34,39 +60,46 @@ const BookingsList = () => {
             Bookings
           </h1>
 
-           <Table striped bordered hover responsive="md" className="text-center">
-            <thead className="table-primary">
-              <tr>
-                <th>#</th>
-                <th>Name</th>
-                <th>Gender</th>
-                <th>Date</th>
-                <th>Event</th>
-                <th>Price</th>
-                
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>1</td>
-                <td>Jishan</td>
-                <td>Male</td>
-                <td>29/08/2003</td>
-                <td>Justin Bieber</td>
-                <td>$500</td>
-               
-              </tr>
-              <tr>
-                <td>2</td>
-                <td>Alex</td>
-                <td>Female</td>
-                <td>15/09/2023</td>
-                <td>Coldplay Concert</td>
-                <td>$300</td>
-                
-              </tr>
-            </tbody>
-          </Table>
+          {/* Error message */}
+          {error && <div className="alert alert-danger">{error}</div>}
+
+          {/* Loading spinner */}
+          {isLoading && (
+            <div className="d-flex justify-content-center">
+              <div className="spinner-border text-primary" role="status"></div>
+            </div>
+          )}
+
+          {/* Bookings Table */}
+          {!isLoading && !error && bookings.length > 0 && (
+            <Table striped bordered hover responsive="md" className="text-center">
+              <thead className="table-primary">
+                <tr>
+                  <th>#</th>
+                  <th>UserName</th>
+                  <th>Date</th>
+                  <th>Event Name</th>
+                  <th>Price</th>
+                </tr>
+              </thead>
+              <tbody>
+                {bookings.map((booking, index) => (
+                  <tr key={index}>
+                    <td>{index + 1}</td>
+                    <td>{booking.userName}</td>
+                    <td>{booking.date}</td>
+                    <td>{booking.eventName}</td>
+                    <td>${booking.price}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </Table>
+          )}
+
+          {/* No bookings message */}
+          {!isLoading && !error && bookings.length === 0 && (
+            <div className="alert alert-info">No bookings available.</div>
+          )}
         </div>
       </div>
     </>

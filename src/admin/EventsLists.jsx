@@ -1,13 +1,44 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react';
 import logo from '../assets/Logo.png';
 import SideNavbar from '../components/SideNavbar';
-import { Container, Navbar, Table } from 'react-bootstrap';
+import { Container, Navbar, Row, Col } from 'react-bootstrap';
 import EventCard from '../components/EventCard';
+import { allEventAPI, deleteEventAPI } from '../services/allApi'; // Import deleteEventAPI
 
 const EventsLists = () => {
+  const [allEvents, setAllEvents] = useState([]);
+
+  useEffect(() => {
+    getAllEvents();
+  }, []);
+
+  const getAllEvents = async () => {
+    try {
+      const result = await allEventAPI();
+      if (result.status === 200) {
+        setAllEvents(result.data);
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const handleDelete = async (eventId) => {
+    try {
+      const result = await deleteEventAPI(eventId); // Call the API to delete the event
+      if (result.status === 200) {
+        setAllEvents(allEvents.filter(event => event._id !== eventId)); // Update the state
+        console.log('Event deleted successfully');
+        alert("Event Deleted !!")
+      }
+    } catch (err) {
+      console.error('Error deleting event:', err);
+    }
+  };
+
   return (
-    <> 
-              {/* Top Navbar */}
+    <>
+      {/* Top Navbar */}
       <Navbar expand="lg" className="bg-body-tertiary shadow">
         <Container>
           <Navbar.Brand href="#">
@@ -22,7 +53,7 @@ const EventsLists = () => {
         <SideNavbar />
 
         <div className="p-5 container">
-        <h1
+          <h1
             style={{
               fontFamily: '"Hubot Sans", serif',
               fontSize: '2rem',
@@ -31,13 +62,19 @@ const EventsLists = () => {
             }}
             className="fw-bolder"
           >
-        Events Lists
+            <span className="text-primary fw-bolder">Events</span> Lists
           </h1>
-            <EventCard/>
+          <Row xs={1} sm={1} md={3} lg={3} className="g-4">
+            {allEvents.map((event) => (
+              <Col key={event._id} className="d-flex">
+                <EventCard displayData={event} isAdmin={true} onDelete={handleDelete} />
+              </Col>
+            ))}
+          </Row>
         </div>
-        </div>
+      </div>
     </>
-  )
-}
+  );
+};
 
-export default EventsLists
+export default EventsLists;

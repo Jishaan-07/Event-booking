@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { CircularProgress } from '@mui/material';
 import Header from '../components/Header';
-import { deleteBookingAPI, getBookingsAPI } from '../services/allApi';  // Assuming you have a service to fetch bookings
+import { deleteBookingAPI, getBookingsAPI, sendBookingDetailsAPI } from '../services/allApi';  // Assuming you have a service to fetch bookings
 import taylor from '../assets/taylor.png';
 import SERVER_BASE_URL from '../services/serverUrl';
 
@@ -45,7 +45,7 @@ const Bookings = () => {
       try {
         const result = await deleteBookingAPI(bookingId); // Call API to delete booking
         if (result.status === 200) {
-          alert("Booking deleted successfully");
+          alert("Booking cancelled!!!");
           fetchBookings();  // Reload bookings after deletion
         } else {
           alert("Failed to delete booking");
@@ -54,6 +54,44 @@ const Bookings = () => {
         console.error(err);
       }
     };
+
+    const handleAddPay = async (booking) => {
+      console.log("handleAddPay");
+    
+      const user = JSON.parse(sessionStorage.getItem("user"));
+      if (!user) {
+        alert("Please log in to proceed.");
+        return;
+      }
+    
+      const eventId = booking.eventId; // Extract the eventId from the passed booking
+      console.log("Event ID:", eventId);
+    
+      if (!eventId) {
+        alert("Event ID is missing.");
+        return;
+      }
+    
+      const reqBody = {
+        userId: user._id,
+        eventId: eventId,
+      };
+    console.log(reqBody);
+    
+      try {
+        const result = await sendBookingDetailsAPI(reqBody);
+        if (result.status === 200) {
+          alert("Event Booked Successfully");
+          console.log("Booking Response:", result.data);
+        } else {
+          alert("Failed to add booking");
+        }
+      } catch (err) {
+        console.error(err);
+        alert("An error occurred. Please try again.");
+      }
+    };
+    
 
   return (
     <>
@@ -150,7 +188,7 @@ const Bookings = () => {
                   <button   onClick={() => handleDeleteBooking(booking._id)}  className="btn btn-danger btn-sm" style={{ fontSize: '0.85rem', padding: '5px 10px' }}>
                     Cancel Booking
                   </button>
-                  <button className="btn btn-success btn-sm" style={{ fontSize: '0.85rem', padding: '5px 10px' }}>
+                  <button onClick={() => handleAddPay(booking)} className="btn btn-success btn-sm" style={{ fontSize: '0.85rem', padding: '5px 10px' }}>
                     Pay Now
                   </button>
                 </div>

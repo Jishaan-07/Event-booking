@@ -24,7 +24,6 @@ const EventView = () => {
   }, [id]);
 
 
-
   const handleAddToBooking = async () => {
     const user = JSON.parse(sessionStorage.getItem("user"));
     if (!user) {
@@ -33,6 +32,8 @@ const EventView = () => {
       return;
     }
     const userId = user._id; // Extract user ID
+    console.log(userId);
+    console.log(eventDetails?._id); // Log event ID
   
     if (eventDetails) {
       const bookingDetails = {
@@ -48,22 +49,28 @@ const EventView = () => {
       };
   
       try {
-        // Check if the user has already booked the event
-        const existingBooking = await createBookingAPI({ userId, eventId: eventDetails._id });
+        // Fetch user's bookings to check if this event is already booked
+        const existingBookingResponse = await createBookingAPI({ userId, eventId: eventDetails._id });
+
+        if (existingBookingResponse.status === 200 && existingBookingResponse.data.length > 0) {
+          const isEventAlreadyBooked = existingBookingResponse.data.some(
+            (booking) => booking.eventId === eventDetails._id
+          );
   
-        if (existingBooking.status === 200 && existingBooking.data.length > 0) {
-          alert("You have already booked this event.");
-          return;
+          if (isEventAlreadyBooked) {
+            alert("You have already booked this event.");
+            return;
+          }
         }
   
         // If no existing booking, proceed to create a new booking
-        const result = await createBookingAPI(bookingDetails); // Using the commonAPI function
+        const result = await createBookingAPI(bookingDetails);
         if (result.status === 200) {
           alert("Booking added successfully");
           console.log("Booking Response:", result.data);
           navigate('/bookings'); // Navigate to bookings page after success
         } else {
-          alert("Failed to add booking");
+          alert("Sorry .Ticket Sold Out !!");
         }
       } catch (err) {
         alert("Failed to add booking");
@@ -71,7 +78,6 @@ const EventView = () => {
       }
     }
   };
-  
   
 
 
@@ -81,10 +87,10 @@ if (!eventDetails) {
 
   // Check if seatsAvailable property exists
   const seatsAvailableMessage = eventDetails.seatsAvailable !== undefined
-    ? (eventDetails.seatsAvailable <= 5
+  ? (eventDetails.seatsAvailable <= 5
       ? `Hurry! Only ${eventDetails.seatsAvailable} seats left.`
       : `${eventDetails.seatsAvailable} seats available`)
-    : "Seats information not available";
+  : "Seats information not available";
 
   return (
     <>

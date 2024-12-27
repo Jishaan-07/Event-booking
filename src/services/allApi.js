@@ -49,3 +49,24 @@ export const getBookingsAPI = async (userId) => {
 export const deleteBookingAPI = async (bookingId) => {
   return await commonAPI('DELETE', `${SERVER_BASE_URL}/${bookingId}`);
 };
+
+// post adminBookingListAPI
+export const sendBookingDetailsAPI = async (reqBody) => {
+  return await commonAPI('POST', `${SERVER_BASE_URL}/booking-list`, reqBody);
+};
+
+// get adminBookingListAPI
+export const getAdminBookingListAPI = async () => {
+  return await commonAPI('GET', `${SERVER_BASE_URL}/booking-list`, {});
+}
+// Delete Event API 
+export const deleteEventAPI = async (eventId) => {
+   return await axios.delete(`${SERVER_BASE_URL}/events-list/${eventId}`)};
+// update userAPI
+   export const updateUserAPI = async (userData, token) => {
+    return await axios.put(`${SERVER_BASE_URL}/my-profile`, userData, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+  };
