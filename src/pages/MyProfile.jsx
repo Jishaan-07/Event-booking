@@ -19,29 +19,45 @@ const MyProfile = () => {
   const handleShow = () => setShow(true);
 
   useEffect(() => {
-    const userData = sessionStorage.getItem("user");
-    if (userData) {
-      const users = JSON.parse(userData);
-      if (users.username) {
-        setUsername(users.username.split(" ")[0]);
-      }
-      if (users.email) setEmail(users.email);
-      if (users.phoneno) setPhoneno(users.phoneno);
-    }
+  if(sessionStorage.getItem("user")){
+    const users = JSON.parse(sessionStorage.getItem("user"))
+    setUsername(users.username.split(" ")[0])
+    setEmail(users.email)
+    setPhoneno(users.phoneno  || "")
+  }
   }, []); 
-  // const handleSave = async () => {
-  //   const token = sessionStorage.getItem('token');
-  //   const profileData = { username, phoneno };
 
-  //   try {
-  //     const response = await updateUserAPI(profileData, token);
-  //     alert(response.message);
-  //     sessionStorage.setItem('user', JSON.stringify(response.user));
-  //     navigate('/my-profile')
-  //   } catch (err) {
-  //     alert('Error updating profile. Please try again.');
-  //   }
-  // };
+
+//   const handleSave = async () => {
+//     const token = sessionStorage.getItem('token');
+//     const profileData = { username, phoneno };
+
+//     try {
+//         const response = await updateUserAPI(profileData, token);
+//         alert(response.message);
+//         sessionStorage.setItem('user', JSON.stringify(response.user));
+//         navigate('/my-profile');
+//     } catch (err) {
+//         alert('Error updating profile. Please try again.');
+//     }
+// };
+
+const handleSave = async () => {
+  const userId = JSON.parse(sessionStorage.getItem("user"))._id; // Ensure session has "_id"
+  const updatedUser = { username, phoneno };
+
+  try {
+      const result = await updateUserAPI(userId, updatedUser); // Pass userId to API
+      if (result.status === 200) {
+          sessionStorage.setItem("user", JSON.stringify(result.data.user));
+          alert("Profile Updated Successfully");
+          setShow(false);
+      }
+  } catch (err) {
+      console.log(err);
+      alert("Failed to update, please try again.");
+  }
+};
 
 
   return (
@@ -71,31 +87,32 @@ const MyProfile = () => {
             <Modal.Title className='text-dark fw-bolder'><span className='text-primary'>My</span> Profile</Modal.Title>
           </Modal.Header>
           <Modal.Body>
+    <InputGroup className="mb-3">
+        <InputGroup.Text id="basic-addon1">Username:</InputGroup.Text>
+        <Form.Control
+            value={username}
+            onChange={(e) => setUsername(e.target.value)} // Update username state
+            aria-label="Username"
+            aria-describedby="basic-addon1"
+        />
+    </InputGroup>
 
-            <InputGroup className="mb-3">
-              <InputGroup.Text id="basic-addon1">Username:</InputGroup.Text>
-              <Form.Control
-                 
-                aria-label="Username"
-                aria-describedby="basic-addon1"
-              />
-            </InputGroup>
+    <InputGroup className="mb-3">
+        <InputGroup.Text id="basic-addon1">Phone No:</InputGroup.Text>
+        <Form.Control
+            value={phoneno}
+            onChange={(e) => setPhoneno(e.target.value)} // Update phoneno state
+            aria-label="Phone No"
+            aria-describedby="basic-addon1"
+        />
+    </InputGroup>
+</Modal.Body>
 
-            <InputGroup className="mb-3">
-              <InputGroup.Text id="basic-addon1">Phone No:</InputGroup.Text>
-              <Form.Control
-      
-                aria-label="Username"
-                aria-describedby="basic-addon1"
-              />
-            </InputGroup>
-
-          </Modal.Body>
           <Modal.Footer>
             <Button variant="secondary" className='bg-danger' onClick={handleClose}>
               Cancel
             </Button>
-            <Button className='bg-success'  variant="primary">Save</Button>
+            <Button className='bg-success' onClick={handleSave}   variant="primary">Save</Button>
           </Modal.Footer>
         </Modal>
       </div>

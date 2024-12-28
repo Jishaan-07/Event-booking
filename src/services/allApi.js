@@ -63,10 +63,8 @@ export const getAdminBookingListAPI = async () => {
 export const deleteEventAPI = async (eventId) => {
    return await axios.delete(`${SERVER_BASE_URL}/events-list/${eventId}`)};
 // update userAPI
-   export const updateUserAPI = async (userData, token) => {
-    return await axios.put(`${SERVER_BASE_URL}/my-profile`, userData, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-  };
+export const updateUserAPI = async (userId, userData, token) => {
+  return await commonAPI("PUT", `${SERVER_BASE_URL}/user/${userId}`, userData, {
+      Authorization: `Bearer ${sessionStorage.getItem("token")}`
+  });
+};
