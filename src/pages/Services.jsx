@@ -1,17 +1,21 @@
 // pages/Services.jsx
-import React from 'react';
+import React, { useState } from 'react';
 import serviceLanding from '../assets/serviceLanding.jpg';
 import who from '../assets/who.jpg';
 import what from '../assets/what.jpg';
 import line from '../assets/line.png';
 import { Button } from '@mui/material';
-import { Card } from 'react-bootstrap';
+import { Card, Modal } from 'react-bootstrap';
 import Header from '../components/Header'
-
 const Services = () => {
+
+  const [show, setShow] = useState(false);
+
+  const handleClose = () => setShow(false);
+  const handleShow = () => setShow(true);
   return (
     <>
-<Header/>
+      <Header />
       <div style={{ position: 'relative', textAlign: 'center', color: 'white' }}>
         <img style={{ width: '100%', height: '100vh' }} src={serviceLanding} alt="" />
         <div style={{
@@ -162,40 +166,211 @@ const Services = () => {
               <i className="fa-regular fs-2 fa-star"></i> VIP Event Management
             </Card.Title>
             <Card.Text className='py-3'>
-              Exclusive management for high-profile events, including red carpet treatment, luxury amenities, and personalized guest experiences.
+              Delivering elite event management services with a focus on luxury, exclusivity, and unmatched guest experiences.
             </Card.Text>
             <div className='d-flex justify-content-center'>
-              <Button className='rounded-pill' variant="contained">More info</Button>
+              <Button onClick={handleShow} className='rounded-pill' variant="contained">More info</Button>
             </div>
+            <Modal show={show} onHide={handleClose} centered>
+              <Modal.Header
+                closeButton
+                style={{
+                  backgroundColor: "#f8f9fa",
+                  borderBottom: "2px solid #0d6efd",
+                }}
+              >
+                <Modal.Title className="text-primary fw-bold">
+                  <i
+                    className="fa-solid fa-calendar-check me-2"
+                    style={{ color: "#0d6efd" }}
+                  ></i>
+                  About Event Bookings
+                </Modal.Title>
+              </Modal.Header>
+              <Modal.Body
+                style={{
+                  backgroundColor: "#ffffff",
+                  color: "#333",
+                  borderRadius: "10px",
+                  padding: "20px",
+                  fontFamily: '"Roboto", sans-serif',
+                  lineHeight: "1.6",
+                }}
+              >
+                <p style={{ fontSize: "1.2rem", fontWeight: "500", color: "#0d6efd" }}>
+                  Welcome to Event Bookings
+                </p>
+                <p style={{ color: "#555", fontSize: "1rem" }}>
+                  Explore our comprehensive services designed to make every event a
+                  success, tailored to your unique needs.
+                </p>
+                <ul
+                  style={{
+                    listStyleType: "disc",
+                    paddingLeft: "20px",
+                    margin: "15px 0",
+                  }}
+                >
+                  <li
+                    className="my-3"
+                    style={{
+                      color: "#0d6efd",
+                      fontWeight: "500",
+                      transition: "color 0.3s ease",
+                    }}
+                    onMouseEnter={(e) => (e.target.style.color = "#0056b3")}
+                    onMouseLeave={(e) => (e.target.style.color = "#0d6efd")}
+                  >
+                    <strong>VIP Event Management:</strong> Delivering a premier experience
+                    with attention to every detail.
+                  </li>
+                  <li
+                    className="my-3"
+                    style={{
+                      color: "#0d6efd",
+                      fontWeight: "500",
+                      transition: "color 0.3s ease",
+                    }}
+                    onMouseEnter={(e) => (e.target.style.color = "#0056b3")}
+                    onMouseLeave={(e) => (e.target.style.color = "#0d6efd")}
+                  >
+                    <strong>On-Site Event Coordination:</strong> Ensuring smooth execution
+                    with expert coordinators on the ground.
+                  </li>
+                  <li
+                    className="my-3"
+                    style={{
+                      color: "#0d6efd",
+                      fontWeight: "500",
+                      transition: "color 0.3s ease",
+                    }}
+                    onMouseEnter={(e) => (e.target.style.color = "#0056b3")}
+                    onMouseLeave={(e) => (e.target.style.color = "#0d6efd")}
+                  >
+                    <strong>Virtual Event Services:</strong> Host seamless online events
+                    with advanced digital tools.
+                  </li>
+                  <li
+                    className="my-3"
+                    style={{
+                      color: "#0d6efd",
+                      fontWeight: "500",
+                      transition: "color 0.3s ease",
+                    }}
+                    onMouseEnter={(e) => (e.target.style.color = "#0056b3")}
+                    onMouseLeave={(e) => (e.target.style.color = "#0d6efd")}
+                  >
+                    <strong>Customized Event Branding:</strong> Make your events stand out
+                    with bespoke branding solutions.
+                  </li>
+                  <li
+                    className="my-3"
+                    style={{
+                      color: "#0d6efd",
+                      fontWeight: "500",
+                      transition: "color 0.3s ease",
+                    }}
+                    onMouseEnter={(e) => (e.target.style.color = "#0056b3")}
+                    onMouseLeave={(e) => (e.target.style.color = "#0d6efd")}
+                  >
+                    <strong>Catering Services:</strong> Provide an exceptional dining
+                    experience with customized menus.
+                  </li>
+                  <li
+                    className="my-3"
+                    style={{
+                      color: "#0d6efd",
+                      fontWeight: "500",
+                      transition: "color 0.3s ease",
+                    }}
+                    onMouseEnter={(e) => (e.target.style.color = "#0056b3")}
+                    onMouseLeave={(e) => (e.target.style.color = "#0d6efd")}
+                  >
+                    <strong>Entertainment and Performances:</strong> Enhance your events
+                    with captivating live entertainment.
+                  </li>
+                </ul>
+                <p
+                  style={{
+                    fontWeight: "500",
+                    textAlign: "center",
+                    marginTop: "20px",
+                    fontSize: "1rem",
+                    color: "#555",
+                  }}
+                >
+                  Partner with Event Bookings to make every occasion unforgettable.
+                </p>
+              </Modal.Body>
+              <Modal.Footer
+                style={{
+                  backgroundColor: "#f8f9fa",
+                  borderTop: "2px solid #0d6efd",
+                }}
+              >
+                <Button
+                  variant="outline-primary"
+                  className="rounded-pill px-4"
+                  style={{
+                    fontWeight: "500",
+                    transition: "background-color 0.3s, transform 0.2s",
+                  }}
+                  onClick={handleClose}
+                  onMouseEnter={(e) => {
+                    e.target.style.backgroundColor = "#0d6efd";
+                    e.target.style.color = "#fff";
+                    e.target.style.transform = "scale(1.05)";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.target.style.backgroundColor = "transparent";
+                    e.target.style.color = "#0d6efd";
+                    e.target.style.transform = "scale(1)";
+                  }}
+                >
+                  Close
+                </Button>
+              </Modal.Footer>
+            </Modal>
+
+
+
           </Card.Body>
         </Card>
+
+
 
 
         <Card className='shadow' style={{ width: '20rem' }}>
           <Card.Body>
             <Card.Title className='text-primary fw-bolder' style={{ fontSize: '1.1rem' }}>
-            <i class="fa-solid fs-2 fa-helmet-safety"></i> On-Site Event Coordination
+              <i className="fa-solid fs-2 fa-helmet-safety"></i> On-Site Event Coordination
             </Card.Title>
             <Card.Text className='py-3'>
-            Dedicated event managers who oversee every detail on-site to ensure your event runs smoothly and professionally.            </Card.Text>
+              Dedicated event managers who oversee every detail on-site to ensure your event runs smoothly and professionally.
+            </Card.Text>
             <div className='d-flex justify-content-center'>
-              <Button className='rounded-pill' variant="contained">More info</Button>
+              <Button onClick={handleShow} className='rounded-pill' variant="contained">More info</Button>
             </div>
+
           </Card.Body>
         </Card>
+
 
         <Card className='shadow' style={{ width: '20rem' }}>
           <Card.Body>
             <Card.Title className='text-primary fw-bolder' style={{ fontSize: '1.3rem' }}>
-            <i class="fa-solid fs-2 fa-video"></i> Virtual Event Services
+              <i className="fa-solid fs-2 fa-video"></i> Virtual Event Services
             </Card.Title>
             <Card.Text className='py-3'>
-            Host virtual conferences, webinars, and meetings with our secure, easy-to-use platform. Stream, record, and engage participants from around the world.            </Card.Text>
+              Host virtual conferences, webinars, and meetings with our secure, easy-to-use platform. Stream, record, and engage participants from around the world.
+            </Card.Text>
             <div className='d-flex justify-content-center'>
-              <Button className='rounded-pill' variant="contained">More info</Button>
+              <Button onClick={handleShow} className='rounded-pill' variant="contained">More info</Button>
             </div>
+
           </Card.Body>
         </Card>
+
 
 
 
@@ -206,13 +381,14 @@ const Services = () => {
         <Card className='shadow' style={{ width: '20rem' }}>
           <Card.Body>
             <Card.Title className='text-primary fw-bolder' style={{ fontSize: '1.1rem' }}>
-            <i class="fa-solid fs-2 fa-paint-roller"></i> Customized Event Branding
+              <i class="fa-solid fs-2 fa-paint-roller"></i> Customized Event Branding
             </Card.Title>
             <Card.Text className='py-3'>
-            Create a unique identity for your event with personalized branding solutions, including custom logos, signage, and digital assets.            </Card.Text>
+              Create a unique identity for your event with personalized branding solutions, including custom logos, signage, and digital assets.            </Card.Text>
             <div className='d-flex justify-content-center'>
-              <Button className='rounded-pill' variant="contained">More info</Button>
+              <Button className='rounded-pill' onClick={handleShow} variant="contained">More info</Button>
             </div>
+
           </Card.Body>
         </Card>
 
@@ -220,25 +396,26 @@ const Services = () => {
         <Card className='shadow' style={{ width: '20rem' }}>
           <Card.Body>
             <Card.Title className='text-primary fw-bolder' style={{ fontSize: '1.1rem' }}>
-            <i class="fa-solid fs-2 fa-utensils"></i> Catering Services
+              <i class="fa-solid fs-2 fa-utensils"></i> Catering Services
             </Card.Title>
             <Card.Text className='py-3'>
-            Provide top-notch catering options with menu customization, from gourmet meals to themed buffets and cocktail receptions.         </Card.Text>
+              Provide top-notch catering options with menu customization, from gourmet meals to themed buffets and cocktail receptions.         </Card.Text>
             <div className='d-flex justify-content-center'>
-              <Button className='rounded-pill' variant="contained">More info</Button>
+              <Button className='rounded-pill' onClick={handleShow} variant="contained">More info</Button>
             </div>
+
           </Card.Body>
         </Card>
 
         <Card className='shadow' style={{ width: '20rem' }}>
           <Card.Body>
             <Card.Title className='text-primary fw-bolder' style={{ fontSize: '1.3rem' }}>
-            <i class="fa-solid fs-2 fa-music"></i> Entertainment and Performances
+              <i class="fa-solid fs-2 fa-music"></i> Entertainment and Performances
             </Card.Title>
             <Card.Text className='py-3'>
-            Book live bands, DJs, entertainers, and performers to enhance your event’s ambiance and make it unforgettable.          </Card.Text>
+              Book live bands, DJs, entertainers, and performers to enhance your event’s ambiance and make it unforgettable.          </Card.Text>
             <div className='d-flex justify-content-center'>
-              <Button className='rounded-pill' variant="contained">More info</Button>
+              <Button className='rounded-pill' onClick={handleShow} variant="contained">More info</Button>
             </div>
           </Card.Body>
         </Card>

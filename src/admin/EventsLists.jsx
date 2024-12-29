@@ -25,9 +25,9 @@ const EventsLists = () => {
 
   const handleDelete = async (eventId) => {
     try {
-      const result = await deleteEventAPI(eventId); // Call the API to delete the event
+      const result = await deleteEventAPI(eventId);  
       if (result.status === 200) {
-        setAllEvents(allEvents.filter(event => event._id !== eventId)); // Update the state
+        setAllEvents(allEvents.filter(event => event._id !== eventId));  
         console.log('Event deleted successfully');
         alert("Event Deleted !!")
       }

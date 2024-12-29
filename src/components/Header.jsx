@@ -7,8 +7,7 @@ import Dropdown from 'react-bootstrap/Dropdown';
 
 const Header = () => {
   const [isLogin, setIsLogin] = useState(false);
-  const navigate = useNavigate();  // Use useNavigate
-
+  const navigate = useNavigate();  
   useEffect(() => {
     if (sessionStorage.getItem("token")) {
       setIsLogin(true);
@@ -20,7 +19,7 @@ const Header = () => {
   const handleLogout = () => {
     sessionStorage.removeItem("token");
     setIsLogin(false);
-    navigate("/");  // Redirect to the homepage or login page
+    navigate("/");  
   };
 
   return (

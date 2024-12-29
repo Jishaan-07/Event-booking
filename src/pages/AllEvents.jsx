@@ -39,11 +39,11 @@ const AllEvents = () => {
         {
           allEvents.map(event => (
             <Link
-              key={event._id} // Assuming each event has a unique _id
-              to={`/event-view/${event._id}`} // Ensure the correct event ID is passed in the URL
+              key={event._id}  
+              to={`/event-view/${event._id}`} 
               style={{ textDecoration: 'none' }}
             >
-              <EventCard displayData={event} /> {/* Pass the event data to EventCard */}
+              <EventCard displayData={event} />  
             </Link>
           ))
         }

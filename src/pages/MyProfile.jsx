@@ -43,11 +43,11 @@ const MyProfile = () => {
 // };
 
 const handleSave = async () => {
-  const userId = JSON.parse(sessionStorage.getItem("user"))._id; // Ensure session has "_id"
+  const userId = JSON.parse(sessionStorage.getItem("user"))._id;  
   const updatedUser = { username, phoneno };
 
   try {
-      const result = await updateUserAPI(userId, updatedUser); // Pass userId to API
+      const result = await updateUserAPI(userId, updatedUser);  
       if (result.status === 200) {
           sessionStorage.setItem("user", JSON.stringify(result.data.user));
           alert("Profile Updated Successfully");
@@ -91,7 +91,7 @@ const handleSave = async () => {
         <InputGroup.Text id="basic-addon1">Username:</InputGroup.Text>
         <Form.Control
             value={username}
-            onChange={(e) => setUsername(e.target.value)} // Update username state
+            onChange={(e) => setUsername(e.target.value)} 
             aria-label="Username"
             aria-describedby="basic-addon1"
         />
@@ -101,7 +101,7 @@ const handleSave = async () => {
         <InputGroup.Text id="basic-addon1">Phone No:</InputGroup.Text>
         <Form.Control
             value={phoneno}
-            onChange={(e) => setPhoneno(e.target.value)} // Update phoneno state
+            onChange={(e) => setPhoneno(e.target.value)}  
             aria-label="Phone No"
             aria-describedby="basic-addon1"
         />

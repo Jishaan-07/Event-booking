@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { CircularProgress } from '@mui/material';
 import Header from '../components/Header';
-import { deleteBookingAPI, getBookingsAPI, sendBookingDetailsAPI } from '../services/allApi';  // Assuming you have a service to fetch bookings
+import { deleteBookingAPI, getBookingsAPI, sendBookingDetailsAPI } from '../services/allApi';   
 import taylor from '../assets/taylor.png';
 import SERVER_BASE_URL from '../services/serverUrl';
 
@@ -9,8 +9,8 @@ const Bookings = () => {
   const [bookings, setBookings] = useState([]);
   console.log(bookings);
   
-  const [isLoading, setIsLoading] = useState(false); // State to manage loading state
-  const [error, setError] = useState(null); // State for error handling
+  const [isLoading, setIsLoading] = useState(false);  
+  const [error, setError] = useState(null);  
 
   useEffect(() => {
     fetchBookings();
@@ -43,10 +43,10 @@ const Bookings = () => {
     // Function to delete a booking
     const handleDeleteBooking = async (bookingId) => {
       try {
-        const result = await deleteBookingAPI(bookingId); // Call API to delete booking
+        const result = await deleteBookingAPI(bookingId);  
         if (result.status === 200) {
           alert("Booking cancelled!!!");
-          fetchBookings();  // Reload bookings after deletion
+          fetchBookings();   
         } else {
           alert("Failed to delete booking");
         }
@@ -64,7 +64,7 @@ const Bookings = () => {
         return;
       }
     
-      const eventId = booking.eventId; // Extract the eventId from the passed booking
+      const eventId = booking.eventId;  
       console.log("Event ID:", eventId);
     
       if (!eventId) {
@@ -113,22 +113,19 @@ const Bookings = () => {
           Bookings
         </h1>
 
-        {/* If loading, show CircularProgress */}
-        {isLoading && (
+         {isLoading && (
           <div className="d-flex justify-content-center">
             <CircularProgress color="primary" />
           </div>
         )}
 
-        {/* If there's an error, display the error message */}
-        {error && (
+         {error && (
           <div className="alert alert-danger" role="alert">
             {error}
           </div>
         )}
 
-        {/* Display bookings if available */}
-        {!isLoading && !error && bookings.length > 0 && bookings.map((booking) => (
+         {!isLoading && !error && bookings.length > 0 && bookings.map((booking) => (
           <div key={booking._id} className="d-flex justify-content-start container align-items-center mt-3">
             <img
               src={`${SERVER_BASE_URL}/uploads/${booking?.eventImage}`}
@@ -138,7 +135,7 @@ const Bookings = () => {
                 marginRight: '15px',
               }}
               className="rounded shadow"
-              alt={booking.eventName} // Event name as alt text
+              alt={booking.eventName} 
             />
             <div
               style={{
@@ -197,8 +194,7 @@ const Bookings = () => {
           </div>
         ))}
 
-        {/* If no bookings, show a message */}
-        {!isLoading && !error && bookings.length === 0 && (
+         {!isLoading && !error && bookings.length === 0 && (
           <div className="alert alert-info" role="alert">
             You have no bookings yet.
           </div>

@@ -1,7 +1,7 @@
 import React from 'react';
 import smallCircle from "../assets/Ellipse 794.png";
 import bigCircle from "../assets/bigCircle.png";
-import plane from "../assets/plane.png";
+import contact from "../assets/contact.jpg";
 import Header from '../components/Header'
 
 import { Box, Button, FormControl, FormControlLabel, FormLabel, Radio, RadioGroup, TextField } from '@mui/material';
@@ -84,44 +84,7 @@ const ContactUs = () => {
         </div>
 
         <div style={{ paddingTop: '50px' }} className="col-lg-6 ">
-          <div className="d-flex justify-content-between  align-items-center">
-            <TextField style={{ width: '300px' }} id="name" label="First name" variant="standard" className="mb-4" />
-            <TextField style={{ width: '300px' }} id="name" label="Last name" variant="standard" className="mb-4" />
-          </div>
-          <div className="d-flex justify-content-between align-items-center">
-            <TextField style={{ width: '300px' }} id="email" label="Email" variant="standard" className="mb-4" />
-            <TextField style={{ width: '300px' }} id="phoneNo" label="Phone Number" variant="standard" className="mb-4" />
-          </div>
-          <h5 className='pt-4 fw-bolder' >Select Subject?</h5>
-          <div className="d-flex justify-content-center align-items-start mt-3">
-            <FormControl>
-              <RadioGroup aria-labelledby="contact-us-options" name="contact-us-options" className="d-flex flex-wrap" >
-                <div className="row">
-                  <div className="col-6">
-                    <FormControlLabel value="general" control={<Radio />} label="General Inquiry" />
-                    <FormControlLabel value="event-info" control={<Radio />} label="Event Information Request" />
-                    <FormControlLabel value="ticket-issues" control={<Radio />} label="Ticket Booking Issues" />
-                    <FormControlLabel value="refund" control={<Radio />} label="Refund or Cancellation" />
-                  </div>
-                  <div className="col-6">
-                    <FormControlLabel value="sponsorship" control={<Radio />} label="Sponsorship/Partnership" />
-                    <FormControlLabel value="technical" control={<Radio />} label="Technical Support" />
-                    <FormControlLabel value="feedback" control={<Radio />} label="Feedback or Suggestions" />
-                    <FormControlLabel value="others" control={<Radio />} label="Others" />
-                  </div>
-                </div>
-              </RadioGroup>
-            </FormControl>
-          </div>
-          <div className='pt-5'>
-            <TextField style={{ width: '100%' }} id="standard-basic" label="Write your message" variant="standard" />
-            <div className="mt-5 d-flex justify-content-end">
-              <Button className='bg-primary' variant="contained">Send Messege</Button>
-            </div>
-            <div className=' d-flex justify-content-end '>
-              <img   style={{width:'250px'}}  src={plane} alt="" />
-            </div>
-          </div>
+       <img src={contact} className='img-fluid' alt="" />
 
         </div>
       </div>

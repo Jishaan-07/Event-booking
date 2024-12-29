@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import Header from '../components/Header';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { createBookingAPI, getEventByIdAPI } from '../services/allApi';
-import SERVER_BASE_URL from '../services/serverUrl'; // Import SERVER_BASE_URL
+import SERVER_BASE_URL from '../services/serverUrl'; 
 
 const EventView = () => {
   const { id } = useParams();
@@ -13,7 +13,7 @@ const EventView = () => {
       try {
         const result = await getEventByIdAPI(id);
         if (result.status === 200) {
-          console.log("Event Details:", result.data); // Log to see the data structure
+          console.log("Event Details:", result.data);  
           setEventDetails(result.data);
         }
       } catch (err) {
@@ -31,9 +31,9 @@ const EventView = () => {
       navigate('/login');
       return;
     }
-    const userId = user._id; // Extract user ID
+    const userId = user._id;  
     console.log(userId);
-    console.log(eventDetails?._id); // Log event ID
+    console.log(eventDetails?._id);  
   
     if (eventDetails) {
       const bookingDetails = {
@@ -49,8 +49,7 @@ const EventView = () => {
       };
   
       try {
-        // Fetch user's bookings to check if this event is already booked
-        const existingBookingResponse = await createBookingAPI({ userId, eventId: eventDetails._id });
+         const existingBookingResponse = await createBookingAPI({ userId, eventId: eventDetails._id });
 
         if (existingBookingResponse.status === 200 && existingBookingResponse.data.length > 0) {
           const isEventAlreadyBooked = existingBookingResponse.data.some(
@@ -63,12 +62,11 @@ const EventView = () => {
           }
         }
   
-        // If no existing booking, proceed to create a new booking
-        const result = await createBookingAPI(bookingDetails);
+         const result = await createBookingAPI(bookingDetails);
         if (result.status === 200) {
           alert("Booking added successfully");
           console.log("Booking Response:", result.data);
-          navigate('/bookings'); // Navigate to bookings page after success
+          navigate('/bookings'); 
         } else {
           alert("Sorry .Ticket Sold Out !!");
         }
